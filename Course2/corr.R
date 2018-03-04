@@ -20,7 +20,8 @@ corr<- function (directory, threshold=0){
   #start the loop for monitor IDs provided
   for (i in 1:332){
     #Generate fix  width CSV file name
-    fname<-paste(formatC(i,width=3,flag="0"),".CSV",sep="")
+    fname<-paste(formatC(i,width=3,flag="0"),".csv",sep="")
+    fname<-paste(directory,fname,sep="") 
     
     #read the data from the provided monitorIDs and store in the variable
     ##currentfiles<-read.csv(file.path(directory,fname) )    

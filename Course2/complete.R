@@ -19,19 +19,24 @@ complete<-function (directory, id=1:332)
   #initialize mean_vector
   completecases <- c()
   nob_result<-data.frame()
+  #nob_result<-c()
   
   #start the loop for monitor IDs provided
   for (i in id){
     #Generate fix  width CSV file name
-    charid<-paste(formatC(i,width=3,flag="0"),".CSV",sep="")
+    charid<-paste(formatC(i,width=3,flag="0"),".csv",sep="")
     
+  
+    charid<-paste(directory,charid,sep="") 
     #read the data from the provided monitorIDs and store in the variable
-    currentfiles<-read.csv(charid)     
+    currentfiles<-read.csv(charid) 
+    
     
     #find no. of complete observations
  
     completecases <- sum(complete.cases(currentfiles))
-    nob_result<- rbind(nob_result,data.frame(id=i,nobs=completecases))
+   nob_result<- rbind(nob_result,data.frame(id=i,nobs=completecases))
+   
   }
   return (nob_result)
 }
