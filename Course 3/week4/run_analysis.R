@@ -1,6 +1,7 @@
 ## The purpose of this script is to collect and read data from UCI 
 # and generate tidy data set from it
 
+# This is a function to download the file and unzip the dataset
 extractData<-function (){
 
 	url<-"https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
@@ -116,7 +117,7 @@ return(merged_data)
 }
 
 # function that is used to save data to file
-save_data <- function (clean_data, file_name) {
+saveData <- function (clean_data, file_name) {
 	write.table(clean_data, file = file_name, row.names = FALSE)
 }
 
@@ -138,13 +139,11 @@ if (!file.exists("./data")) {
 	dir.create("./data")
 }
 
-save_data(merged_data,"./data/tidy_data.txt")
-#grouped_data<-merged_data %>%
-#	group_by(subjectID, activityDesc) %>%
-#	summarize(AvgtimeBodyAccMeanX=mean(timeBodyAccMeanX))
+saveData(merged_data,"./data/tidy_data.txt")
+
 message("Aggregating data..")
 grouped_data<-aggregate(merged_data[, 2:ncol(merged_data)-2],list(subjectID=merged_data$subjectID,activityDesc= merged_data$activityDesc), mean)
-save_data(grouped_data,"./data/aggregate_UCI_mean_tidy_data.txt")
+saveData(grouped_data,"./data/aggregate_UCI_mean_tidy_data.txt")
 }
 
 run_analysis<-function(){
