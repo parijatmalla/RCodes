@@ -9,11 +9,11 @@ The directory contains R script to:
 - Appropriately label the data set with descriptive variable names.
 - Creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 
-##Steps to run:
+## Steps to run:
 Run the script run_analysis.R
 
 
-##Details of run_analysis.R
+## Details of run_analysis.R
 
 extractData() - This is a function to download the UCI file and unzip it.
 
