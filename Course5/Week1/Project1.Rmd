@@ -1,0 +1,124 @@
+---
+title: "Reproducible Research: Project 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Dataset
+
+Dataset: Activity monitoring data [52K] https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip
+
+## Read the data:
+
+
+
+```{r cars}
+
+	url<-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+	zip_file <- file.path(getwd(), "repdata%2Fdata%2Factivity.zip")
+	
+	f<-"./activity.csv"
+	uci_zipfile<-".repdata%2Fdata%2Factivity"
+	
+	
+		download.file(url, zip_file, mode = "wb")
+		unzip("repdata%2Fdata%2Factivity.zip", overwrite=TRUE)
+
+	file<-"./activity.csv"
+	activityNA<-read.csv(file,header=TRUE, sep=",")
+
+
+```
+
+
+## Removing NA values 
+
+```{r NA}
+	activity<-activityNA[with(activityNA,{!(is.na(steps))}),]
+
+```
+
+
+## Get the total number of steps for each day
+
+```{r step}
+activity$date<-as.Date(activity$date,format="%Y-%m-%d")
+	
+	library(dplyr)
+	
+	#group by date
+	groupedData<-group_by(activity,date)
+	
+	#get the total steps in a day
+	s<-summarize(groupedData,steps=sum(steps))
+	
+
+	hist(s$steps,main="Histogram of Total Steps per Day",xlab="Steps Per Day")
+```
+
+# Mean and median number of steps taken
+
+```{r mean}
+mean(s$steps)
+
+median(s$steps)
+```
+
+# Time series plot of the average number of steps taken
+Make a time series plot (i.e. \color{red}{\verb|type = "l"|}type="l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
+``` {r time_series}
+time_series<-select (activity,interval,steps)
+
+## group by interval #
+g<-group_by(time_series,interval)
+
+avg_step<-summarize(g,steps=mean(steps))
+plot(x=avg_step$interval,y=avg_step$steps,type="l",main="Average No.of Steps Taken Across All Days",xlab="5-minute Interval",ylab="Average No. of Steps")
+
+``` 
+
+Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+``` {r max}
+avg_step[which.max(avg_step$steps),]
+
+```
+
+## Imputing missing values
+Note that there are a number of days/intervals where there are missing values (coded as \color{red}{\verb|NA|}NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
+
+Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with \color{red}{\verb|NA|}NAs)
+
+``` {r na}
+nrow(filter(activityNA,is.na(steps)==TRUE))
+```
+
+Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+``` {r impute}
+# get mean steps for eagh interval
+groupedData<-group_by(activity,interval)
+mean_steps<-summarize(groupedData, steps=mean(steps))
+
+activityOnlyNA<-activityNA[with(activityNA,{(is.na(steps))}),]
+activityOnlyNA<-select(activityOnlyNA,interval,date)
+imputedData<-merge(activityOnlyNA,mean_steps,by.x="interval", by.y="interval")
+```
+
+Create a new dataset that is equal to the original dataset but with the missing data filled in.
+``` {r newdata}
+imputeData<-select(imputedData, interval,date,steps)
+#names(imputedData$steps.y)<-"steps"
+activityImputed<-rbind(imputedData,activity)
+head(activityImputed)
+```
+
+Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
